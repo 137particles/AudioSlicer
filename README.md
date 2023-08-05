@@ -1,3 +1,9 @@
+# Credit
+This repo is derived from the code https://github.com/henrymaas/AudioSlicer with credit going to them for the original codebase.
+
+# Our Changes
+The code has been modified to add command line arguments, improved output, --help options and ability to reject files for being too long or short.  
+
 # AudioSlicer
 
 A simple Audio Slicer in Python which can split .wav audio files into multiple .wav samples, based on silence detection. Also, it dumps a .json that contains the periods of time in which the slice occours, in the following format: 
