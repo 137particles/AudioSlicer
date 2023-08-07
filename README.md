@@ -4,6 +4,34 @@ This repo is derived from the code https://github.com/henrymaas/AudioSlicer with
 # Our Changes
 The code has been modified to add command line arguments, improved output, --help options and ability to reject files for being too long or short.  
 
+# Command Line Parameters
+
+- `--input`
+  - **Description**: Path to the input WAV file.
+s
+- `--output`
+  - **Description**: Path to the output directory.
+
+- `--min_silence_length`
+  - **Type**: Float
+  - **Default**: 0.6 seconds
+  - **Description**: The minimum length of silence at which a split may occur. Defaults to 0.6 seconds.
+
+- `--min_audio_length`
+  - **Type**: Integer
+  - **Default**: 3 seconds
+  - **Description**: Minimum accepted audio length in seconds.
+
+- `--max_audio_length`
+  - **Type**: Integer
+  - **Default**: 9 seconds
+  - **Description**: Maximum accepted audio length in seconds.
+
+- `--discard_outliers`
+  - **Type**: Integer
+  - **Default**: 1
+  - **Description**: Do not write a file if it is outside the accepted file size range of `min_audio_length` to `max_audio_length` seconds.
+
 # AudioSlicer
 
 A simple Audio Slicer in Python which can split .wav audio files into multiple .wav samples, based on silence detection. Also, it dumps a .json that contains the periods of time in which the slice occours, in the following format: 
