@@ -48,9 +48,9 @@ def parse_arguments():
     parser.add_argument("--output", help="Path to the output directory.")
     parser.add_argument("--min_silence_length", type=float, default=0.6,
                         help="The minimum length of silence at which a split may occur [seconds]. Defaults to 0.6 seconds.")
-    parser.add_argument("--min_audio_length", type=int, default=3,
+    parser.add_argument("--min_audio_length", type=float, default=2.5,
                         help="Minimum accepted audio length in seconds.")
-    parser.add_argument("--max_audio_length", type=int, default=9,
+    parser.add_argument("--max_audio_length", type=float, default=9,
                         help="Maximum accepted audio length in seconds.")
     parser.add_argument("--discard_outliers", type=int, default=1,
                         help=f"Do not write a file if it is outside the accepted file size range of min_audio_length to max_audio_length seconds.")
@@ -202,6 +202,8 @@ def main():
     # List to store file information
     file_info_list = []
 
+    not_written = 0
+
     for i, start, stop in cut_ranges:
         output_file_path = "{}_{:03d}.wav".format(
             os.path.join(output_dir, output_filename_prefix),
@@ -213,10 +215,10 @@ def main():
         is_outlier = False
 
         if (duration_seconds < min_audio_length or duration_seconds > max_audio_length) and discard_outliers != 0:
-            duration_str = Fore.RED + f"{int(duration_minutes)}:{int(duration_seconds):02}" + Style.RESET_ALL
+            duration_str = Fore.RED + f"{int(duration_minutes)}:{float(duration_seconds):05.2f}" + Style.RESET_ALL
             is_outlier = True
         else:
-            duration_str = f"{int(duration_minutes)}:{int(duration_seconds):02}"
+            duration_str = f"{int(duration_minutes)}:{float(duration_seconds):05.2f}"
 
         if not dry_run and (discard_outliers == 0 or (discard_outliers != 0 and is_outlier == False)):
             wavfile.write(
@@ -227,13 +229,17 @@ def main():
             files_created += 1  # Increment the counter
             file_info_list.append((output_file_path, duration_str))  # Store the information
         else:
-            file_info_list.append((output_file_path, "Not written"))  # Store the information
+            file_info_list.append((output_file_path, f"{Fore.RED}{duration_str} NOT WRITTEN {Style.RESET_ALL}"))  # Store the information
+            not_written += 1
 
     # Print the file information
     for file_info in file_info_list:
         print(f"{Fore.WHITE}Writing file {file_info[0]} with duration {file_info[1]}{Style.RESET_ALL}")
 
     print(f"{Fore.GREEN}{files_created} files were created in the directory \"{output_dir}{Style.RESET_ALL}\"")
+
+    if (not_written > 0):
+        print(f"{Fore.RED}{not_written} files were were not written{Style.RESET_ALL}")
 
     with open (output_dir+'\\'+output_filename_prefix+'.json', 'w') as output:
         json.dump(audio_sub, output)
